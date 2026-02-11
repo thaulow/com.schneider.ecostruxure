@@ -8,7 +8,7 @@ import {
   getCapabilitiesForModel,
   getCapabilityOptionsForModel,
 } from '../../lib/PowerTagRegistry';
-import { readDeviceType } from '../../lib/ModbusHelpers';
+import { readDeviceType, readDeviceName } from '../../lib/ModbusHelpers';
 import type { PowerTagSettings, PowerTagStore, PowerTagDeviceData } from '../../lib/types';
 
 class PowerTagDriver extends Homey.Driver {
@@ -121,8 +121,16 @@ class PowerTagDriver extends Homey.Driver {
             continue;
           }
 
+          // Try to read the user-configured name from the gateway
+          let deviceName = '';
+          try {
+            deviceName = await readDeviceName(client);
+          } catch {
+            // Name register may not be available on all gateways
+          }
+
           devices.push({
-            name: `${modelConfig.name} (${slaveId})`,
+            name: deviceName || `${modelConfig.name} (${slaveId})`,
             data: { id: `${settings.address}:${settings.port}:${slaveId}` } as PowerTagDeviceData,
             settings: {
               address: settings.address,

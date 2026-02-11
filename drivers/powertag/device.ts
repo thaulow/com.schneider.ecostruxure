@@ -2,9 +2,23 @@
 
 import Homey from 'homey';
 import { POWERTAG_MODELS } from '../../lib/PowerTagRegistry';
-import { readAllRegisters } from '../../lib/ModbusHelpers';
+import {
+  readAllRegisters,
+  readHeatTagRegisters,
+  readControl2DIRegisters,
+  readControlIORegisters,
+  writeControlIOOutput,
+} from '../../lib/ModbusHelpers';
 import { ModbusConnectionManager } from '../../lib/ModbusConnectionManager';
-import type { PowerTagSettings, PowerTagStore, PowerTagModelConfig, PollResult } from '../../lib/types';
+import type {
+  PowerTagSettings,
+  PowerTagStore,
+  PowerTagModelConfig,
+  EnergyPollResult,
+  HeatTagPollResult,
+  Control2DIPollResult,
+  ControlIOPollResult,
+} from '../../lib/types';
 
 class PowerTagDevice extends Homey.Device {
 
@@ -31,6 +45,18 @@ class PowerTagDevice extends Homey.Device {
       return;
     }
     this.modelConfig = config;
+
+    // Register capability listener for Control IO output
+    if (this.modelConfig.deviceCategory === 'control_io') {
+      this.registerCapabilityListener('onoff', async (value: boolean) => {
+        await this.getConnectionManager().execute(
+          this.settings.address,
+          this.settings.port,
+          this.store.slaveId,
+          (client) => writeControlIOOutput(client, value),
+        );
+      });
+    }
 
     // Acquire shared connection
     try {
@@ -109,14 +135,41 @@ class PowerTagDevice extends Homey.Device {
 
   private async poll(): Promise<void> {
     try {
-      const result = await this.getConnectionManager().execute(
-        this.settings.address,
-        this.settings.port,
-        this.store.slaveId,
-        (client) => readAllRegisters(client, this.modelConfig.voltageMode),
-      );
-
-      await this.updateCapabilities(result);
+      switch (this.modelConfig.deviceCategory) {
+        case 'heattag': {
+          const result = await this.getConnectionManager().execute(
+            this.settings.address, this.settings.port, this.store.slaveId,
+            (client) => readHeatTagRegisters(client),
+          );
+          await this.updateHeatTagCapabilities(result);
+          break;
+        }
+        case 'control_2di': {
+          const result = await this.getConnectionManager().execute(
+            this.settings.address, this.settings.port, this.store.slaveId,
+            (client) => readControl2DIRegisters(client),
+          );
+          await this.updateControl2DICapabilities(result);
+          break;
+        }
+        case 'control_io': {
+          const result = await this.getConnectionManager().execute(
+            this.settings.address, this.settings.port, this.store.slaveId,
+            (client) => readControlIORegisters(client),
+          );
+          await this.updateControlIOCapabilities(result);
+          break;
+        }
+        case 'energy':
+        default: {
+          const result = await this.getConnectionManager().execute(
+            this.settings.address, this.settings.port, this.store.slaveId,
+            (client) => readAllRegisters(client, this.modelConfig.voltageMode),
+          );
+          await this.updateEnergyCapabilities(result);
+          break;
+        }
+      }
 
       if (!this.getAvailable()) {
         await this.setAvailable();
@@ -127,20 +180,17 @@ class PowerTagDevice extends Homey.Device {
     }
   }
 
-  private async updateCapabilities(data: PollResult): Promise<void> {
-    // Total measurements (always present)
+  private async updateEnergyCapabilities(data: EnergyPollResult): Promise<void> {
     await this.safeSetCapability('measure_power', data.totalPower);
     await this.safeSetCapability('meter_power', data.totalEnergy);
     await this.safeSetCapability('measure_power_factor', data.powerFactor);
     await this.safeSetCapability('measure_temperature', data.temperature);
     await this.safeSetCapability('measure_frequency', data.frequency);
 
-    // Per-phase: L1 (always present)
     await this.safeSetCapability('measure_voltage.l1', data.voltagePh1);
     await this.safeSetCapability('measure_current.l1', data.currentL1);
     await this.safeSetCapability('measure_power.l1', data.powerL1);
 
-    // Per-phase: L2, L3 (3P models only)
     if (this.modelConfig.phaseCount === 3) {
       await this.safeSetCapability('measure_voltage.l2', data.voltagePh2);
       await this.safeSetCapability('measure_current.l2', data.currentL2);
@@ -152,12 +202,35 @@ class PowerTagDevice extends Homey.Device {
     }
   }
 
+  private async updateHeatTagCapabilities(data: HeatTagPollResult): Promise<void> {
+    await this.safeSetCapability('measure_temperature', data.temperature);
+    await this.safeSetCapability('measure_humidity', data.humidity);
+    await this.safeSetBoolCapability('alarm_heat', data.alarmLevel > 0);
+  }
+
+  private async updateControl2DICapabilities(data: Control2DIPollResult): Promise<void> {
+    await this.safeSetBoolCapability('alarm_contact.di1', data.di1Status);
+    await this.safeSetBoolCapability('alarm_contact.di2', data.di2Status);
+  }
+
+  private async updateControlIOCapabilities(data: ControlIOPollResult): Promise<void> {
+    await this.safeSetBoolCapability('alarm_contact.di1', data.di1Status);
+    await this.safeSetBoolCapability('onoff', data.outputStatus);
+  }
+
   private async safeSetCapability(id: string, value: number): Promise<void> {
     if (!this.hasCapability(id)) return;
     if (value === null || value === undefined || !isFinite(value)) return;
 
     const rounded = Math.round(value * 100) / 100;
     await this.setCapabilityValue(id, rounded).catch((err) => {
+      this.error(`Failed to set ${id}:`, err);
+    });
+  }
+
+  private async safeSetBoolCapability(id: string, value: boolean): Promise<void> {
+    if (!this.hasCapability(id)) return;
+    await this.setCapabilityValue(id, value).catch((err) => {
       this.error(`Failed to set ${id}:`, err);
     });
   }

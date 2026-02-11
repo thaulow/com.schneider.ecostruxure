@@ -1,6 +1,6 @@
 # Schneider EcoStruxure
 
-Monitor your Schneider EcoStruxure energy devices in Homey via Modbus TCP.
+Monitor your Schneider EcoStruxure devices in Homey via Modbus TCP.
 
 ## Supported Gateways
 
@@ -10,17 +10,24 @@ Monitor your Schneider EcoStruxure energy devices in Homey via Modbus TCP.
 
 ## Supported Devices
 
+### Energy Sensors
 - PowerTag M63 series (1P, 1P+N, 3P, 3P+N)
-- PowerTag F63 series (1P+N, 3P+N)
+- PowerTag F63 series (1P+N, 3P, 3P+N)
 - PowerTag P63 series (1P+N, 3P+N)
-- PowerTag NSX series (250A, 630A)
+- PowerTag NSX series (M250, M630)
+- PowerTag Rope series (R200, R600, R1000, R2000)
+- PowerTag F160
 
-These are Schneider EcoStruxure Acti9 PowerTag energy sensors that clip onto your circuit breakers and NSX compact circuit breakers.
+### Control Modules
+- PowerTag C 2DI — 2 digital inputs (breaker position, trip indicator)
+- PowerTag C IO — 1 digital input + 1 digital output (remote control)
+
+### Environmental Sensors
+- HeatTag Sensor — temperature, humidity, and heat alarm
 
 ## Capabilities
 
-Each PowerTag exposes the following measurements:
-
+### Energy Sensors
 - **Power** — total active power (W)
 - **Energy** — cumulative energy consumption (kWh)
 - **Voltage** — per phase (V)
@@ -31,6 +38,15 @@ Each PowerTag exposes the following measurements:
 - **Temperature** (°C)
 
 3-phase devices report values for L1, L2, and L3 individually.
+
+### HeatTag Sensor
+- **Temperature** (°C)
+- **Humidity** (%)
+- **Heat alarm**
+
+### Control Modules
+- **Digital inputs** — contact status monitoring
+- **Digital output** (C IO only) — on/off remote control
 
 ## Pairing
 
