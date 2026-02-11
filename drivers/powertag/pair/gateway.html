@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<body>
+  <p>Enter the IP address of your Smartlink SI D or PowerTag Link gateway.</p>
+
+  <label>Gateway IP Address</label><br />
+  <input type="text" id="address" placeholder="192.168.1.100" style="width:100%" /><br /><br />
+
+  <label>Port</label><br />
+  <input type="number" id="port" value="502" style="width:100%" /><br /><br />
+
+  <label>Polling Interval (seconds)</label><br />
+  <input type="number" id="polling" value="30" min="5" max="3600" style="width:100%" /><br /><br />
+
+  <button type="button" id="save" style="width:100%; padding:10px; font-size:16px;">Connect &amp; Discover Devices</button>
+
+  <p id="status" style="color:green;">Ready.</p>
+
+  <script type="application/javascript">
+    document.getElementById('save').addEventListener('click', function() {
+      var statusEl = document.getElementById('status');
+      var address = document.getElementById('address').value.trim();
+      var port = parseInt(document.getElementById('port').value, 10) || 502;
+      var polling = parseInt(document.getElementById('polling').value, 10) || 30;
+
+      if (!address) {
+        Homey.alert('Please enter an IP address.');
+        return;
+      }
+
+      statusEl.innerText = 'Connecting to ' + address + ':' + port + '...';
+      statusEl.style.color = 'orange';
+      document.getElementById('save').disabled = true;
+
+      Homey.emit('gateway_settings', {
+        address: address,
+        port: port,
+        polling: polling
+      })
+      .then(function(result) {
+        statusEl.innerText = 'Discovering devices...';
+        statusEl.style.color = 'green';
+      })
+      .catch(function(err) {
+        statusEl.innerText = 'Error: ' + (err.message || err);
+        statusEl.style.color = 'red';
+        document.getElementById('save').disabled = false;
+      });
+    });
+  </script>
+</body>
+</html>

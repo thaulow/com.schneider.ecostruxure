@@ -1,0 +1,19 @@
+{
+  "type": "number",
+  "title": {
+    "en": "Frequency"
+  },
+  "units": {
+    "en": "Hz"
+  },
+  "insights": true,
+  "desc": {
+    "en": "Grid frequency"
+  },
+  "chartType": "spline",
+  "decimals": 1,
+  "getable": true,
+  "setable": false,
+  "uiComponent": "sensor",
+  "icon": "/assets/icon.svg"
+}

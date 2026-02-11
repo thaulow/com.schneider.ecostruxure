@@ -1,0 +1,152 @@
+{
+  "_comment": "This file is generated. Please edit .homeycompose/app.json instead.",
+  "id": "com.schneider.acti9",
+  "version": "1.0.0",
+  "compatibility": ">=5.0.0",
+  "sdk": 3,
+  "platforms": [
+    "local"
+  ],
+  "name": {
+    "en": "Schneider Acti9"
+  },
+  "description": {
+    "en": "Monitor your Acti9 devices in Homey"
+  },
+  "category": [
+    "energy"
+  ],
+  "permissions": [],
+  "images": {
+    "small": "/assets/images/small.png",
+    "large": "/assets/images/large.png",
+    "xlarge": "/assets/images/xlarge.png"
+  },
+  "author": {
+    "name": "Thomas Thaulow",
+    "email": "thaulow@thaulow.co"
+  },
+  "drivers": [
+    {
+      "name": {
+        "en": "Schneider PowerTag"
+      },
+      "platforms": [
+        "local"
+      ],
+      "class": "sensor",
+      "connectivity": [
+        "lan"
+      ],
+      "capabilities": [],
+      "energy": {
+        "cumulative": true,
+        "cumulativeImportedCapability": "meter_power"
+      },
+      "pair": [
+        {
+          "id": "gateway",
+          "navigation": {
+            "next": "list_devices"
+          }
+        },
+        {
+          "id": "list_devices",
+          "template": "list_devices",
+          "navigation": {
+            "next": "add_devices"
+          }
+        },
+        {
+          "id": "add_devices",
+          "template": "add_devices"
+        }
+      ],
+      "id": "powertag",
+      "settings": [
+        {
+          "type": "group",
+          "label": {
+            "en": "Connection"
+          },
+          "children": [
+            {
+              "id": "address",
+              "type": "text",
+              "label": {
+                "en": "Gateway IP Address"
+              },
+              "value": "0.0.0.0",
+              "hint": {
+                "en": "IP address of the Smartlink SI D or PowerTag Link gateway"
+              }
+            },
+            {
+              "id": "port",
+              "type": "number",
+              "label": {
+                "en": "Gateway Port"
+              },
+              "value": 502
+            },
+            {
+              "id": "polling",
+              "type": "number",
+              "label": {
+                "en": "Polling Interval (seconds)"
+              },
+              "value": 30,
+              "min": 5,
+              "max": 3600,
+              "hint": {
+                "en": "How often to read measurements from the device"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "capabilities": {
+    "measure_frequency": {
+      "type": "number",
+      "title": {
+        "en": "Frequency"
+      },
+      "units": {
+        "en": "Hz"
+      },
+      "insights": true,
+      "desc": {
+        "en": "Grid frequency"
+      },
+      "chartType": "spline",
+      "decimals": 1,
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "icon": "/assets/icon.svg"
+    },
+    "measure_power_factor": {
+      "type": "number",
+      "title": {
+        "en": "Power Factor"
+      },
+      "units": {
+        "en": ""
+      },
+      "insights": true,
+      "desc": {
+        "en": "Power factor"
+      },
+      "chartType": "spline",
+      "decimals": 2,
+      "min": -1,
+      "max": 1,
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "icon": "/assets/icon.svg"
+    }
+  }
+}

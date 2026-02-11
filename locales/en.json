@@ -1,0 +1,13 @@
+{
+  "pair": {
+    "title": "Add PowerTag",
+    "intro": "Enter the IP address of your Smartlink SI D or PowerTag Link gateway.",
+    "address": "Gateway IP Address",
+    "port": "Port",
+    "polling": "Polling Interval (seconds)",
+    "connect": "Connect & Discover",
+    "missing_fields": "Please fill in all fields.",
+    "invalid_polling": "Polling interval must be between 5 and 3600 seconds.",
+    "connection_failed": "Could not connect to the gateway."
+  }
+}
