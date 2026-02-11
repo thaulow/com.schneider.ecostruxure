@@ -5,6 +5,10 @@
   "platforms": ["local"],
   "class": "sensor",
   "connectivity": ["lan"],
+  "images": {
+    "small": "{{driverAssetsPath}}/small.png",
+    "large": "{{driverAssetsPath}}/large.png"
+  },
   "capabilities": [],
   "energy": {
     "cumulative": true,
