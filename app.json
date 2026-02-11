@@ -38,6 +38,10 @@
       "connectivity": [
         "lan"
       ],
+      "images": {
+        "small": "/drivers/powertag/assets/small.png",
+        "large": "/drivers/powertag/assets/large.png"
+      },
       "capabilities": [],
       "energy": {
         "cumulative": true,

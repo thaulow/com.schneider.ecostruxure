@@ -21,6 +21,7 @@
     "large": "/assets/images/large.png",
     "xlarge": "/assets/images/xlarge.png"
   },
+  "brandColor": "#009530",
   "author": {
     "name": "Thomas Thaulow",
     "email": "thaulow@thaulow.co"
