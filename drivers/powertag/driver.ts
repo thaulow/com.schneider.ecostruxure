@@ -67,7 +67,11 @@ class PowerTagDriver extends Homey.Driver {
   }
 
   /**
-   * Scan slave IDs 150-169 for PowerTag devices on the gateway.
+   * Scan for PowerTag devices on the gateway.
+   *
+   * Scans slave IDs 100-199 to cover both:
+   *   - Smartlink SI D / PowerTag Link: devices at 150-169
+   *   - EcoStruxure Panel Server (PAS): devices at 100-199
    *
    * Uses a single Modbus client created before socket.connect() so that
    * jsmodbus sees the 'connect' event. The unit ID is swapped per slave.
@@ -78,7 +82,7 @@ class PowerTagDriver extends Homey.Driver {
 
     // Create the Modbus client BEFORE connecting — jsmodbus must see the
     // socket 'connect' event to transition its internal state to 'online'.
-    const client = new Modbus.client.TCP(socket, 150);
+    const client = new Modbus.client.TCP(socket, 100);
 
     try {
       await new Promise<void>((resolve, reject) => {
@@ -98,17 +102,18 @@ class PowerTagDriver extends Homey.Driver {
         });
       });
 
-      this.log('Starting Modbus scan of slave IDs 150-169...');
-      for (let slaveId = 150; slaveId < 170; slaveId++) {
+      this.log('Starting Modbus scan of slave IDs 100-199...');
+      for (let slaveId = 100; slaveId < 200; slaveId++) {
         try {
           // Reuse client, swap unit ID for each slave
           (client as any)._unitId = slaveId;
           (client as any)._requestHandler._unitId = slaveId;
 
           const typeId = await readDeviceType(client);
-          this.log(`Slave ${slaveId}: typeId=${typeId}`);
 
           if (typeId === 0 || typeId === 65535) continue;
+
+          this.log(`Slave ${slaveId}: typeId=${typeId}`);
 
           const modelConfig = POWERTAG_MODELS.get(typeId);
           if (!modelConfig) {
@@ -130,11 +135,11 @@ class PowerTagDriver extends Homey.Driver {
           });
 
           this.log(`Found ${modelConfig.model} at slave ${slaveId}`);
-        } catch (err: any) {
-          this.log(`Slave ${slaveId}: ${err.message || err}`);
+        } catch {
+          // No device at this slave ID
         }
 
-        await new Promise(r => setTimeout(r, 150));
+        await new Promise(r => setTimeout(r, 100));
       }
     } finally {
       socket.destroy();

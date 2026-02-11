@@ -3,13 +3,13 @@
 import Homey from 'homey';
 import { ModbusConnectionManager } from './lib/ModbusConnectionManager';
 
-class Acti9App extends Homey.App {
+class EcoStruxureApp extends Homey.App {
 
   public modbusManager!: ModbusConnectionManager;
 
   async onInit() {
     this.modbusManager = new ModbusConnectionManager(this.homey);
-    this.log('Schneider Acti9 app initialized');
+    this.log('Schneider EcoStruxure app initialized');
   }
 
   async onUninit() {
@@ -18,4 +18,4 @@ class Acti9App extends Homey.App {
 
 }
 
-module.exports = Acti9App;
+module.exports = EcoStruxureApp;

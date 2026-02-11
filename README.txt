@@ -1,1 +1,1 @@
-Monitor your Acti9 devices in Homey
+Monitor your Schneider Electric devices in Homey

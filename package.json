@@ -1,5 +1,5 @@
 {
-  "name": "com.schneider.acti9",
+  "name": "com.schneider.ecostruxure",
   "version": "1.0.0",
   "scripts": {
     "build": "tsc",

@@ -1,5 +1,5 @@
 {
-  "id": "com.schneider.acti9",
+  "id": "com.schneider.ecostruxure",
   "version": "1.0.1",
   "compatibility": ">=5.0.0",
   "sdk": 3,
@@ -7,10 +7,10 @@
     "local"
   ],
   "name": {
-    "en": "Schneider Acti9"
+    "en": "Schneider EcoStruxure"
   },
   "description": {
-    "en": "Monitor your Acti9 devices in Homey"
+    "en": "Connect your Schneider Electric Acti9 PowerTag and EcoStruxure Panel Server devices to Homey via Modbus TCP. Monitor real-time power, voltage, current, energy consumption, and more."
   },
   "category": [
     "energy"
