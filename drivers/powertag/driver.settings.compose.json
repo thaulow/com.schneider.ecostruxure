@@ -2,6 +2,21 @@
   {
     "type": "group",
     "label": {
+      "en": "Energy"
+    },
+    "children": [
+      {
+        "id": "whole_house",
+        "type": "checkbox",
+        "label": { "en": "Whole-house meter" },
+        "value": false,
+        "hint": { "en": "Enable this only for the PowerTag on your main breaker. Homey Energy will use it as the total home energy reading." }
+      }
+    ]
+  },
+  {
+    "type": "group",
+    "label": {
       "en": "Connection"
     },
     "children": [

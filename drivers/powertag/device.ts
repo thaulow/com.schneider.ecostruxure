@@ -47,6 +47,9 @@ class PowerTagDevice extends Homey.Device {
     }
     this.modelConfig = config;
 
+    // Set Homey Energy config based on whole-house setting
+    await this.applyEnergyConfig();
+
     // Register capability listener for Control IO output
     if (this.modelConfig.deviceCategory === 'control_io') {
       this.registerCapabilityListener('onoff', async (value: boolean) => {
@@ -112,6 +115,21 @@ class PowerTagDevice extends Homey.Device {
     if (changedKeys.includes('polling')) {
       this.settings.polling = newSettings.polling;
       this.startPolling();
+    }
+
+    if (changedKeys.includes('whole_house')) {
+      await this.applyEnergyConfig(newSettings.whole_house);
+    }
+  }
+
+  private async applyEnergyConfig(wholeHouse?: boolean): Promise<void> {
+    if (this.modelConfig.deviceCategory !== 'energy') return;
+
+    const isWholeHouse = wholeHouse ?? this.getSetting('whole_house') ?? false;
+    if (isWholeHouse) {
+      await this.setEnergy({ cumulative: true, cumulativeImportedCapability: 'meter_power' });
+    } else {
+      await this.setEnergy({});
     }
   }
 

@@ -35,7 +35,7 @@
       "platforms": [
         "local"
       ],
-      "class": "sensor",
+      "class": "other",
       "connectivity": [
         "lan"
       ],
@@ -44,10 +44,6 @@
         "large": "/drivers/powertag/assets/large.png"
       },
       "capabilities": [],
-      "energy": {
-        "cumulative": true,
-        "cumulativeImportedCapability": "meter_power"
-      },
       "pair": [
         {
           "id": "gateway",
@@ -69,6 +65,25 @@
       ],
       "id": "powertag",
       "settings": [
+        {
+          "type": "group",
+          "label": {
+            "en": "Energy"
+          },
+          "children": [
+            {
+              "id": "whole_house",
+              "type": "checkbox",
+              "label": {
+                "en": "Whole-house meter"
+              },
+              "value": false,
+              "hint": {
+                "en": "Enable this only for the PowerTag on your main breaker. Homey Energy will use it as the total home energy reading."
+              }
+            }
+          ]
+        },
         {
           "type": "group",
           "label": {

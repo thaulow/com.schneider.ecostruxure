@@ -3,17 +3,13 @@
     "en": "Schneider PowerTag"
   },
   "platforms": ["local"],
-  "class": "sensor",
+  "class": "other",
   "connectivity": ["lan"],
   "images": {
     "small": "{{driverAssetsPath}}/small.png",
     "large": "{{driverAssetsPath}}/large.png"
   },
   "capabilities": [],
-  "energy": {
-    "cumulative": true,
-    "cumulativeImportedCapability": "meter_power"
-  },
   "pair": [
     {
       "id": "gateway",
