@@ -31,5 +31,8 @@
   },
   "1.0.11": {
     "en": "Set power to default, make whole_house false"
+  },
+  "1.0.12": {
+    "en": "changed measurement"
   }
 }
