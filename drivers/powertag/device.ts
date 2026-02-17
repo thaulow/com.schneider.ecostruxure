@@ -127,7 +127,11 @@ class PowerTagDevice extends Homey.Device {
 
     const isWholeHouse = wholeHouse ?? this.getSetting('whole_house') ?? false;
     if (isWholeHouse) {
-      await this.setEnergy({ cumulative: true, cumulativeImportedCapability: 'meter_power' });
+      await this.setEnergy({
+        cumulative: true,
+        cumulativeImportedCapability: 'meter_power.imported',
+        cumulativeExportedCapability: 'meter_power.exported',
+      });
     } else {
       await this.setEnergy({});
     }
@@ -202,7 +206,8 @@ class PowerTagDevice extends Homey.Device {
 
   private async updateEnergyCapabilities(data: EnergyPollResult): Promise<void> {
     await this.safeSetCapability('measure_power', data.totalPower);
-    await this.safeSetCapability('meter_power', data.totalEnergy);
+    await this.safeSetCapability('meter_power.imported', data.energyImported);
+    await this.safeSetCapability('meter_power.exported', data.energyExported);
     await this.safeSetCapability('measure_power_factor', data.powerFactor);
     await this.safeSetCapability('measure_temperature', data.temperature);
     await this.safeSetCapability('measure_frequency', data.frequency);

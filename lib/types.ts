@@ -33,7 +33,8 @@ export interface EnergyPollResult {
   powerL3: number;
   totalPower: number;
   powerFactor: number;
-  totalEnergy: number; // kWh (converted from Wh)
+  energyImported: number; // kWh (converted from Wh) — "delivered" in Schneider terminology
+  energyExported: number; // kWh (converted from Wh) — "received" in Schneider terminology
   temperature: number;
   frequency: number;
 }

@@ -87,7 +87,8 @@ export function getCapabilitiesForModel(config: PowerTagModelConfig): string[] {
     default: {
       const caps: string[] = [
         'measure_power',
-        'meter_power',
+        'meter_power.imported',
+        'meter_power.exported',
         'measure_power_factor',
         'measure_temperature',
         'measure_frequency',
@@ -123,6 +124,9 @@ export function getCapabilityOptionsForModel(config: PowerTagModelConfig): Recor
 
     case 'energy':
     default: {
+      opts['meter_power.imported'] = { title: { en: 'Energy Imported' } };
+      opts['meter_power.exported'] = { title: { en: 'Energy Exported' } };
+
       const phases = config.phaseCount === 1 ? ['l1'] : ['l1', 'l2', 'l3'];
       const labels: Record<string, string> = { l1: 'L1', l2: 'L2', l3: 'L3' };
 

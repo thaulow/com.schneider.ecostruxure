@@ -12,7 +12,8 @@ const REG_POWER_L1     = 3053;
 const REG_POWER_FACTOR = 3083;
 const REG_FREQUENCY    = 3109;
 const REG_TEMPERATURE  = 3131;
-const REG_ENERGY_TOTAL = 3203;
+const REG_ENERGY_IMPORTED = 3207; // "Delivered" (register 3208): energy consumed / imported
+const REG_ENERGY_EXPORTED = 3211; // "Received"  (register 3212): energy produced / exported
 
 /** Device type ID register, used during discovery (Smartlink only, hex 0x7930) */
 export const REG_DEVICE_TYPE = 31024;
@@ -45,7 +46,8 @@ export async function readAllRegisters(
   const pfResp     = await client.readHoldingRegisters(REG_POWER_FACTOR, 2);
   const freqResp   = await client.readHoldingRegisters(REG_FREQUENCY, 2);
   const tempResp   = await client.readHoldingRegisters(REG_TEMPERATURE, 2);
-  const energyResp = await client.readHoldingRegisters(REG_ENERGY_TOTAL, 4);
+  const importResp = await client.readHoldingRegisters(REG_ENERGY_IMPORTED, 4);
+  const exportResp = await client.readHoldingRegisters(REG_ENERGY_EXPORTED, 4);
 
   const currBuf   = currResp.response.body.valuesAsBuffer;
   const voltBuf   = voltResp.response.body.valuesAsBuffer;
@@ -53,23 +55,25 @@ export async function readAllRegisters(
   const pfBuf     = pfResp.response.body.valuesAsBuffer;
   const freqBuf   = freqResp.response.body.valuesAsBuffer;
   const tempBuf   = tempResp.response.body.valuesAsBuffer;
-  const energyBuf = energyResp.response.body.valuesAsBuffer;
+  const importBuf = importResp.response.body.valuesAsBuffer;
+  const exportBuf = exportResp.response.body.valuesAsBuffer;
 
   return {
-    currentL1:   currBuf.readFloatBE(0),
-    currentL2:   currBuf.readFloatBE(4),
-    currentL3:   currBuf.readFloatBE(8),
-    voltagePh1:  voltBuf.readFloatBE(0),
-    voltagePh2:  voltBuf.readFloatBE(4),
-    voltagePh3:  voltBuf.readFloatBE(8),
-    powerL1:     powerBuf.readFloatBE(0),
-    powerL2:     powerBuf.readFloatBE(4),
-    powerL3:     powerBuf.readFloatBE(8),
-    totalPower:  powerBuf.readFloatBE(12),
-    powerFactor: pfBuf.readFloatBE(0),
-    frequency:   freqBuf.readFloatBE(0),
-    temperature: tempBuf.readFloatBE(0),
-    totalEnergy: Number(energyBuf.readBigInt64BE(0)) / 1000, // Wh -> kWh
+    currentL1:      currBuf.readFloatBE(0),
+    currentL2:      currBuf.readFloatBE(4),
+    currentL3:      currBuf.readFloatBE(8),
+    voltagePh1:     voltBuf.readFloatBE(0),
+    voltagePh2:     voltBuf.readFloatBE(4),
+    voltagePh3:     voltBuf.readFloatBE(8),
+    powerL1:        powerBuf.readFloatBE(0),
+    powerL2:        powerBuf.readFloatBE(4),
+    powerL3:        powerBuf.readFloatBE(8),
+    totalPower:     powerBuf.readFloatBE(12),
+    powerFactor:    pfBuf.readFloatBE(0),
+    frequency:      freqBuf.readFloatBE(0),
+    temperature:    tempBuf.readFloatBE(0),
+    energyImported: Number(importBuf.readBigInt64BE(0)) / 1000, // Wh -> kWh
+    energyExported: Number(exportBuf.readBigInt64BE(0)) / 1000, // Wh -> kWh
   };
 }
 
